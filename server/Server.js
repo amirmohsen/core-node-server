@@ -1,10 +1,5 @@
 function Server() {}
 
-Server.app = Express();
-Server.staticApp = Express();
-Server.httpServer = HTTP.createServer(Server.app);
-Server.httpsServer = null;
-
 Server.configure = function() {
 
 	if(Config.proxy) {			
