@@ -1,30 +1,41 @@
 var Loader = {
 
-	index: -1,
+	globalModules: {
+		EventEmitter: "events",
+		FS: "fs-extra",
+		Path: "path",
+		Util: "util"
+	},
+
+	globalize: function() {
+		for(var module in globalModules) {
+			global[module] = require(globalModules[module]);
+		}
+		return Loader;
+	},
 
 	config: function() {
-		var config = JSON.parse(
-			FS.readFileSync(__ROOT + "/config.json", { encoding: "utf-8" })
-		);
+		var config = require(Path.join(__ROOT, "/config"));		
 		Seed.config = config.core;
-		App.config = config.app;
+		App.config = config.app;		
 		return Loader;
-	};
+	},
 
-	load: function(run) {
-		Loader.index++;
-		if(Loader.index < Seed.Config.components.length) {
+	load: function(componentStartupCallback) {
+		Seed.config.components.forEach((function(component) {
 			try {
-				var name = Seed.Config.components[Loader.index];
-				if(name)
-					run(name, require("./components/" + name));
+				var componentClass = require(Path.join("./components/", component.name));
+				if(componentClass) {
+					componentClass.config = component.config;
+					componentStartupCallback(component, componentClass);
+				}
 			}
 			catch(e) {
 				dumpError(e);
 			}
-			Loader.load(createCallback);
-		}
-	};
+		}).bind(this));
+		Seed.emit("router:routing-finished");
+	}
 }
 
 module.exports = Loader;

@@ -1,0 +1,9 @@
+{
+  "name": "seed-sever",
+  "description": "The server component of Seed",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "4.9.5"
+  }
+}

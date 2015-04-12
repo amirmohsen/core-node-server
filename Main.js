@@ -1,9 +1,7 @@
 function Main(appRoot) {
-
 	try {
-		global.Seed = require("./Seed.js");
 		global.App = {};
-		Seed.start(appRoot);
+		global.Seed = new (require("./Seed.js"))(appRoot);
 	}
 	catch(error){
 		dumpError(error);
