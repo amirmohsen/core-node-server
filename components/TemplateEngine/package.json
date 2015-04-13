@@ -1,0 +1,10 @@
+{
+  "name": "seed-templatemanager",
+  "description": "The template manager component of Seed",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "consolidate": "^0.12.1",
+    "handlebars": "^3.0.1"
+  }
+}

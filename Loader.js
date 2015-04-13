@@ -1,41 +1,43 @@
-var Loader = {
+function Loader(componentStartupCallback) {
+	this.init(componentStartupCallback);
+}
 
-	globalModules: {
-		EventEmitter: "events",
-		FS: "fs-extra",
-		Path: "path",
-		Util: "util"
+Loader.prototype = {
+	
+	globalModules: require("./GlobalModules"),
+
+	init: function(componentStartupCallback) {
+		this.globalize();
+		this.config();
+		this.load(componentStartupCallback);
 	},
 
 	globalize: function() {
-		for(var module in globalModules) {
-			global[module] = require(globalModules[module]);
+		for(var module in this.globalModules) {
+			global[module] = require(this.globalModules[module]);
 		}
-		return Loader;
 	},
 
 	config: function() {
 		var config = require(Path.join(__ROOT, "/config"));		
-		Seed.config = config.core;
-		App.config = config.app;		
-		return Loader;
+		S.config = config.core;
+		A.config = config.app;
 	},
 
 	load: function(componentStartupCallback) {
-		Seed.config.components.forEach((function(component) {
+		S.config.components.forEach((function(component) {
 			try {
-				var componentClass = require(Path.join("./components/", component.name));
-				if(componentClass) {
-					componentClass.config = component.config;
-					componentStartupCallback(component, componentClass);
-				}
+				var componentClass = require("./components/" + component.name);
+				if(componentClass)
+					componentStartupCallback(component.name, 
+						componentClass, component.config);
 			}
 			catch(e) {
 				dumpError(e);
 			}
 		}).bind(this));
-		Seed.emit("router:routing-finished");
+		S.emit("router:routing-finished");
 	}
-}
+};
 
 module.exports = Loader;

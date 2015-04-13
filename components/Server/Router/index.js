@@ -1,8 +1,10 @@
 var 
-	Express = require("express");
+	Express = require("express"),
+	ServeStatic = require("serve-static"),
+	Vhost = require("vhost");
 
 function Router(config) {
-	Router.config = config;
+	this.config = config;
 	this.init();
 }
 
@@ -11,35 +13,33 @@ Router.prototype.init = function() {
 
 	console.log("Starting routing ...");
 
-	for(var route in Router.config.staticRoutes) {
-		var location = Router.config.staticRoutes[route];
-		Seed.$.Server.staticApp.use(route, 
-			ServeStatic(Path.join(__ROOT, location), staticOpts));
+	for(var route in this.config.staticRoutes) {
+		var location = this.config.staticRoutes[route];
+		S.$.Server.staticApp.use(route, 
+			ServeStatic(Path.join(__ROOT, location), S.$.Server.staticOpts));
 	}
 	
-	if(Seed.$.config.appVhosts.length===0)
-		Router._router.use(Server.staticApp);
+	if(S.$.Server.config.appVhosts.length===0)
+		this._router.use(Server.staticApp);
 	else {
-		Seed.$.config.appVhosts.forEach(function (appVhost) {
-			Router._router.use(Vhost(appVhost, Server.staticApp));
-		});			
+		S.$.Server.config.appVhosts.forEach((function (appVhost) {
+			this._router.use(Vhost(appVhost, S.$.Server.staticApp));
+		}).bind(this));			
 	}
 
-	this.route = this._router.use;
-
-	Seed.once("router:routing-finished", this.handleErrors.bind(this));
+	S.once("router:routing-finished", this.handleErrors.bind(this));
 };
 
 Router.prototype.handleErrors = function() {
 	// Resource not found
-	Router.router.use(function(req, res, next){
-		res.status(404).sendFile(Path.join(__ROOT, "public", Router.config.e404));
+	this._router.use(function(req, res, next){
+		res.status(404).sendFile(Path.join(__ROOT, "public", this.config.e404));
 	});
 
 	// Houston, we have a problem!
-	Router.router.use(function(err, req, res, next){
+	this._router.use(function(err, req, res, next){
 		dumpError(err);
-		res.status(500).sendFile(Path.join(__ROOT, "public", Router.config.e500));
+		res.status(500).sendFile(Path.join(__ROOT, "public", this.config.e500));
 	});
 };
 

@@ -1,15 +1,16 @@
 var LessMiddleware = require("less-middleware");
 
-function LessHandler () {
+function LessHandler (config) {
+	this.config = config;
 	this.init();
 }
 
 LessHandler.prototype.init = function() {
-	Silk.$.Server.router.route(
+	S.$.Server.route(
 		LessMiddleware(
-			Path.join(__ROOT, LessHandler.config.src), 
+			Path.join(__ROOT, this.config.src), 
 			{
-				dest: Path.join(__ROOT, LessHandler.config.dest),
+				dest: Path.join(__ROOT, this.config.dest),
 				compiler: {
 					compress: false,
 					sourceMap: true
@@ -26,3 +27,5 @@ LessHandler.prototype.init = function() {
 		)
 	);
 };
+
+module.exports = LessHandler;

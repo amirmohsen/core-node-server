@@ -1,21 +1,29 @@
+var
+	EventEmitter = require("events"),
+	Util = require("util");
+
 function Seed(appRoot) {
 	EventEmitter.call(this);
-	global.__ROOT = appRoot;
-	this.init();
+	this.init(appRoot);
 }
 
 Util.inherits(Seed, EventEmitter);
 
-Seed.$ = {};
+Seed.prototype.$ = {};
 
 Seed.prototype.init = function(appRoot) {
-	console.log("Loading modules & configuration ...");
-	Seed.$.Loader = require("./Loader.js");
-	Seed.$.Loader.globalize().config().load(Seed.run.bind(this));
+	global.__ROOT = appRoot;
 };
 
-Seed.prototype.run = function(name, Component) {
-	Seed.$[name] = new Component();
+Seed.prototype.run = function() {
+	console.log("Loading modules & configuration ...");
+	S.$.Loader = new (require("./Loader"))(this.loadComponent.bind(this));
+}
+
+Seed.prototype.loadComponent = function(name, Component, config) {
+	S.$[name] = new Component(config);
+	if(S.$[name].run)
+		S.$[name].run();
 };
 
 module.exports = Seed;
