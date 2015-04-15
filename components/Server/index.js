@@ -18,6 +18,7 @@ Server.prototype = {
 
 	init: function() {
 		this.app = Express();
+		this.app.set("env", this.config.env);
 		this.staticApp = Express();
 		this.httpServer = HTTP.createServer(this.app);
 		this.httpsServer = null;

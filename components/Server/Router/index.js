@@ -1,6 +1,5 @@
 var 
 	Express = require("express"),
-	ServeStatic = require("serve-static"),
 	Vhost = require("vhost");
 
 function Router(config) {
@@ -10,13 +9,25 @@ function Router(config) {
 
 Router.prototype.init = function() {
 	this._router = Express.Router();
+	this._static = Express.static;
 
 	console.log("Starting routing ...");
 
+	S.once("router:routing-finished", this.serve.bind(this));
+};
+
+Router.prototype.serve = function() {
+
 	for(var route in this.config.staticRoutes) {
-		var location = this.config.staticRoutes[route];
-		S.$.Server.staticApp.use(route, 
-			ServeStatic(Path.join(__ROOT, location), S.$.Server.staticOpts));
+		var dir = this.config.staticRoutes[route];
+		if(Array.isArray(dir)) {
+			for(var i=0; i<dir.length; i++) {
+				this.serveDir(route, dir[i]);
+			}
+		}
+		else
+			this.serveDir(route, dir);
+		
 	}
 	
 	if(S.$.Server.config.appVhosts.length===0)
@@ -27,20 +38,21 @@ Router.prototype.init = function() {
 		}).bind(this));			
 	}
 
-	S.once("router:routing-finished", this.handleErrors.bind(this));
-};
-
-Router.prototype.handleErrors = function() {
 	// Resource not found
-	this._router.use(function(req, res, next){
-		res.status(404).sendFile(Path.join(__ROOT, "public", this.config.e404));
-	});
+	this._router.use((function(req, res, next){
+		res.status(404).sendFile(Path.join(__ROOT, "public/pages", this.config.errors.e404));
+	}).bind(this));
 
 	// Houston, we have a problem!
-	this._router.use(function(err, req, res, next){
+	this._router.use((function(err, req, res, next){
 		dumpError(err);
-		res.status(500).sendFile(Path.join(__ROOT, "public", this.config.e500));
-	});
+		res.status(500).sendFile(Path.join(__ROOT, "public/pages", this.config.errors.e500));
+	}).bind(this));
+};
+
+Router.prototype.serveDir = function(route, dir) {
+	S.$.Server.staticApp.use(route, 
+		this._static(Path.join(__ROOT, dir), S.$.Server.staticOpts));
 };
 
 module.exports = Router;

@@ -18,7 +18,7 @@ LessHandler.prototype.init = function() {
 				preprocess: {
 					less: function(src, req){
 						src = "@appPath: \"" +
-								Silk.$.Server.config.appPath + "\";\n" + src;
+								S.$.Server.config.appPath + "\";\n" + src;
 															
 						return src;
 					}
