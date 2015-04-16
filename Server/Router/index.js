@@ -3,7 +3,7 @@ var
 	Vhost = require("vhost");
 
 function Router(config) {
-	this.config = config;
+	this.config = config || {};
 	this.init();
 }
 
@@ -13,7 +13,7 @@ Router.prototype.init = function() {
 
 	console.log("Starting routing ...");
 
-	S.once("router:routing-finished", this.serve.bind(this));
+	S.once("all-components-loaded", this.serve.bind(this));
 };
 
 Router.prototype.serve = function() {

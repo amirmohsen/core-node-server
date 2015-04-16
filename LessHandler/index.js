@@ -1,11 +1,13 @@
 var LessMiddleware = require("less-middleware");
 
 function LessHandler (config) {
-	this.config = config;
-	this.init();
+	Seed.Component.call(this);
+	this.config = config || {};
 }
 
-LessHandler.prototype.init = function() {
+Util.inherits(LessHandler, Seed.Component);
+
+LessHandler.prototype.run = function() {
 	S.$.Server.route(
 		LessMiddleware(
 			Path.join(__ROOT, this.config.src), 

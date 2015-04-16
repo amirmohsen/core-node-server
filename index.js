@@ -1,27 +1,14 @@
-function Main(appRoot) {
-	try {
-		global.A = {};
-		global.S = new (require("./Seed"))(appRoot);
-		S.run();
-	}
-	catch(error){
-		dumpError(error);
-	}
-}
+var Seed = function() {
+	return require("./Core");
+};
 
-global.dumpError = function(err) {
-	if (typeof err === 'string')
-		console.error(err);
-	else if (typeof err === 'object') {
-		if (err.message) {
-			console.error('\nMessage: ' + err.message)
-		}
-		if (err.stack) {
-			console.error('\nStacktrace:')
-			console.error('====================')
-			console.error(err.stack);
-		}
-	}
-}
+// Abstract
+Seed.Component = require("./Abstract/Component");
 
-module.exports = Main;
+// Components
+Seed.API = require("./API");
+Seed.LessHandler = require("./LessHandler");
+Seed.Server = require("./Server");
+Seed.TemplateEngine = require("./TemplateEngine");
+
+module.exports = Seed;

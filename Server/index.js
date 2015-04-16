@@ -10,9 +10,12 @@ var
 	Router = require("./Router");
 
 function Server(config) {
-	this.config = config;
+	Seed.Component.call(this);
+	this.config = config || {};
 	this.init();
 }
+
+Util.inherits(Server, Seed.Component);
 
 Server.prototype = {
 

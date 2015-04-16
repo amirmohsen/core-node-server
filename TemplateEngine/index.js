@@ -3,17 +3,20 @@ var
 	Hogan = require("hogan.js"),
 	HTMLBeautify = require('js-beautify').html;
 
-
 function TemplateEngine(config) {
-	this.config = config;
+	Seed.Component.call(this);
+	this.config = config || {};
 	this.init();
 }
 
-TemplateEngine.prototype.init = function() {
+Util.inherits(TemplateEngine, Seed.Component);
 
+TemplateEngine.prototype.init = function() {
 	this.preCompile = false;
 	this.fsOps = { encoding: "utf-8" };
+};
 
+TemplateEngine.prototype.run = function() {
 	if(S.$.Server.app.get("env") === "production")
 		this.preCompile = true;
 
@@ -34,9 +37,10 @@ TemplateEngine.prototype.glue = function(filePath, options, callback) {
 
 		var $ = {
 				options: options,
-				callback: callback,
-				page: Cheerio.load(content)
+				callback: callback
 			};
+
+		$.page = Cheerio.load(this.replaceVars($, content));
 
 		this.loadLayout($);
 
@@ -58,7 +62,7 @@ TemplateEngine.prototype.loadLayout = function($) {
 			if (err)
 				return $.callback(new Error(err));
 
-			$.doc = Cheerio.load(content);
+			$.doc = Cheerio.load(this.replaceVars($, content));
 
 			$.doc("link[rel='import'][page]").replaceWith($.page.html());
 
@@ -88,7 +92,7 @@ TemplateEngine.prototype.importMixins = function($) {
 				if (err)
 					return $.callback(new Error(err));
 
-				$mixinImporter.replaceWith(content);
+				$mixinImporter.replaceWith(this.replaceVars($, content));
 
 				count++;
 
@@ -113,25 +117,41 @@ TemplateEngine.prototype.gluePieces = function($) {
 		if(refs[1])
 			$templateSrc = $templateSrc.find("template#" + refs[1]);
 
-		$templateRef.replaceWith($templateSrc.html());
+		if($templateSrc.length > 0)
+			$templateRef.replaceWith($templateSrc.html());
 	});
 
 	$.doc("template").remove();
 
-	this.replaceVars($);
+	$.doc("[ref]").each(function(index, element) {
+		var
+			$elementRef = $.doc(element),
+			ref = $elementRef.attr("ref"),
+			$elementSrc = $.doc("[template='" + ref + "']").clone().removeAttr("template");
+
+		if($elementSrc.length > 0)
+			$elementRef.replaceWith($elementSrc);
+	});
+
+	$.doc("[ref]").remove();
+	$.doc("[template]").remove();
+
+	this.render($);
 };
 
-TemplateEngine.prototype.replaceVars = function($) {
-	
+TemplateEngine.prototype.replaceVars = function($, content) {
+	return Hogan.compile(content).render($.options),
+};
+
+TemplateEngine.prototype.reder = function($) {
 	var rendered = HTMLBeautify(
-		Hogan.compile($.doc.html()).render($.options),
+		$.doc.html()
 		{
 			indent_size: 1,
 			indent_char: "	",
 			preserve_newlines: false
 		}
 	);
-
 	return $.callback(null, rendered);
 };
 

@@ -1,11 +1,13 @@
 function API (config) {
-	this.config = config;
-	this.init();
+	Seed.Component.call(this);
+	this.config = config || {};
 }
+
+Util.inherits(API, Seed.Component);
 
 API.BAD_CALL_ERR = "API Error: Bad API call";
 
-API.prototype.init = function() {
+API.prototype.run= function() {
 	S.$.Server.route("/_api", this.call.bind(this));
 };
 
