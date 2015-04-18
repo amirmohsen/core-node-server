@@ -1,27 +1,31 @@
-function Main(config) {
-	try {
-		global.A = {};
-		global.S = new (require("./Seed"))(config);
-		S.run();
-	}
-	catch(error){
-		dumpError(error);
-	}
+function Seed(config) {
+	EventEmitter.call(this);
+	this.config = config || {};
+	this.components = [];
+	this.init();
 }
 
-global.dumpError = function(err) {
-	if (typeof err === 'string')
-		console.error(err);
-	else if (typeof err === 'object') {
-		if (err.message) {
-			console.error('\nMessage: ' + err.message)
-		}
-		if (err.stack) {
-			console.error('\nStacktrace:')
-			console.error('====================')
-			console.error(err.stack);
-		}
-	}
-}
+Util.inherits(Seed, EventEmitter);
 
-module.exports = Main;
+Seed.prototype.$ = {};
+
+Seed.prototype.init = function() {
+	global.__ROOT = this.config.appRoot;
+	global.S = this;
+	global.A = {};
+};
+
+Seed.prototype.push = function(name, component) {
+	this.components.push(name);
+	S.$[name] = component;
+};
+
+Seed.prototype.run = function() {
+	console.log("Loading modules & configuration ...");
+	this.components.forEach(function (component) {
+		S.$[component].run();
+	});
+	S.emit("all-components-loaded");
+};
+
+module.exports = Seed;

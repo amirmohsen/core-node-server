@@ -10,7 +10,7 @@ var
 	Router = require("./Router");
 
 function Server(config) {
-	Seed.Component.call(this);
+	Seed.Component.call(this, "Server");
 	this.config = config || {};
 	this.init();
 }

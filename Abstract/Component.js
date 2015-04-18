@@ -1,10 +1,5 @@
-function Component() {
-	this.init();
+function Component(name) {
+	S.push(name, this);
 }
 
-Component.prototype = {
-	
-	init: function () {
-		S.push(this);
-	}
-};
+module.exports = Component;

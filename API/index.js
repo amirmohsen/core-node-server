@@ -1,5 +1,5 @@
 function API (config) {
-	Seed.Component.call(this);
+	Seed.Component.call(this, "API");
 	this.config = config || {};
 }
 

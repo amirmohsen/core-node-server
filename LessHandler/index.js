@@ -1,7 +1,7 @@
 var LessMiddleware = require("less-middleware");
 
 function LessHandler (config) {
-	Seed.Component.call(this);
+	Seed.Component.call(this, "LessHandler");
 	this.config = config || {};
 }
 

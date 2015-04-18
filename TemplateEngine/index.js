@@ -4,7 +4,7 @@ var
 	HTMLBeautify = require('js-beautify').html;
 
 function TemplateEngine(config) {
-	Seed.Component.call(this);
+	Seed.Component.call(this, "TemplateEngine");
 	this.config = config || {};
 	this.init();
 }
@@ -140,12 +140,12 @@ TemplateEngine.prototype.gluePieces = function($) {
 };
 
 TemplateEngine.prototype.replaceVars = function($, content) {
-	return Hogan.compile(content).render($.options),
+	return Hogan.compile(content).render($.options);
 };
 
-TemplateEngine.prototype.reder = function($) {
+TemplateEngine.prototype.render = function($) {
 	var rendered = HTMLBeautify(
-		$.doc.html()
+		$.doc.html(),
 		{
 			indent_size: 1,
 			indent_char: "	",
