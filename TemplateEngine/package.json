@@ -1,0 +1,11 @@
+{
+  "name": "seed-templatemanager",
+  "description": "The template manager component of Seed",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "hogan.js": "^3.0.2",
+    "js-beautify": "^1.5.5"
+  }
+}

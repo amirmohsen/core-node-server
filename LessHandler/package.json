@@ -1,0 +1,9 @@
+{
+  "name": "seed-lesshandler",
+  "description": "The LessHandler component of Seed",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "less-middleware": "^1.0.4"
+  }
+}

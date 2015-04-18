@@ -1,0 +1,9 @@
+{
+  "name": "seed-sever-router",
+  "description": "The router component of Seed server",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+  	"vhost": "3.0.0"
+  }
+}

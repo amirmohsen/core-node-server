@@ -1,0 +1,10 @@
+{
+  "name": "seed",
+  "description": "A core customizable web server",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "fs-extra": "0.13.0",
+    "url-join": "0.0.1"
+  }
+}
